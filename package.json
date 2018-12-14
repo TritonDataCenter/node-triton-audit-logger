@@ -1,0 +1,34 @@
+{
+  "name": "triton-audit-logger",
+  "version": "1.0.0",
+  "description": "a restify audit logger plugin for Triton node.js APIs",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joyent/node-triton-audit-logger.git"
+  },
+  "keywords": [
+    "joyent",
+    "triton",
+    "restify",
+    "audit",
+    "logging"
+  ],
+  "author": "Joyent (joyent.com)",
+  "license": "MPL-2.0",
+  "engines": ["node >=4.0.0"],
+  "homepage": "https://github.com/joyent/node-triton-audit-logger",
+  "main": "./lib/audit-logger.js",
+  "files": [
+    "lib"
+  ],
+  "dependencies": {
+    "assert-plus": "^1.0.0"
+  },
+  "devDependencies": {
+    "eslint": "4.13.1",
+    "eslint-config-prettier": "^2.9.0",
+    "eslint-plugin-joyent": "~2.0.0",
+    "eslint-plugin-prettier": "^2.6.0",
+    "prettier": "^1.11.1"
+  }
+}
