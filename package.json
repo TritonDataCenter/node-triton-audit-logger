@@ -15,7 +15,9 @@
   ],
   "author": "Joyent (joyent.com)",
   "license": "MPL-2.0",
-  "engines": ["node >=4.0.0"],
+  "engines": [
+    "node >=4.0.0"
+  ],
   "homepage": "https://github.com/joyent/node-triton-audit-logger",
   "main": "./lib/audit-logger.js",
   "files": [
@@ -31,7 +33,9 @@
     "eslint-plugin-joyent": "~2.0.0",
     "eslint-plugin-prettier": "^2.6.0",
     "prettier": "^1.11.1",
-    "restify": "7.x",
-    "restify-errors": "^5.0.0"
+    "restify": "^7.0.0",
+    "restify-clients": "^2.6.4",
+    "restify-errors": "^5.0.0",
+    "tap": "^12.1.1"
   }
 }

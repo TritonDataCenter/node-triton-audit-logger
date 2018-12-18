@@ -13,13 +13,13 @@
 # Tools
 #
 
-TAP := ./node_modules/.bin/tap
+TAP_EXEC := ./node_modules/.bin/tap
 
 #
 # Files
 #
 
-JS_FILES := $(shell find lib -name '*.js')
+JS_FILES := $(shell find examples lib test -name '*.js')
 ESLINT_FILES := $(JS_FILES)
 
 include ./tools/mk/Makefile.defs
@@ -46,13 +46,15 @@ $(TAP): $(STAMP_NODE_MODULES)
 $(BUILD):
 	mkdir $@
 
+test: test-unit
+
 .PHONY: test-unit
-test-unit: | $(TAP) $(STAMP_NODE_MODULES) $(BUILD)
-	$(TAP) --jobs=$(TEST_UNIT_JOBS) --output-file=$(BUILD)/test.unit.tap test/unit/**/*.test.js
+test-unit: | $(TAP_EXEC) $(STAMP_NODE_MODULES) $(BUILD)
+	$(TAP_EXEC) --jobs=$(TEST_UNIT_JOBS) --output-file=$(BUILD)/test.unit.tap test/unit/**/*.test.js
 
 .PHONY: test-coverage-unit
-test-coverage-unit: | $(TAP) $(STAMP_NODE_MODULES) $(BUILD)
-	$(TAP) --jobs=$(TEST_UNIT_JOBS) --output-file=$(BUILD)/test.unit.tap --coverage \
+test-coverage-unit: | $(TAP_EXEC) $(STAMP_NODE_MODULES) $(BUILD)
+	$(TAP_EXEC) --jobs=$(TEST_UNIT_JOBS) --output-file=$(BUILD)/test.unit.tap --coverage \
 	test/unit/**/*.test.js
 
 check:: check-version
