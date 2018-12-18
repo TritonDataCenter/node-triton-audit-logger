@@ -2,7 +2,7 @@
 
 ## not yet released
 
-(nothing yet)
+- issue #1: Fix an errant logged "null" for `res.body` with restify v4.
 
 ## 1.0.0
 
