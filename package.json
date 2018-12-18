@@ -1,6 +1,6 @@
 {
   "name": "triton-audit-logger",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "a restify audit logger plugin for Triton node.js APIs",
   "repository": {
     "type": "git",
