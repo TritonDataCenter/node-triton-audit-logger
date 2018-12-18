@@ -25,10 +25,13 @@
     "assert-plus": "^1.0.0"
   },
   "devDependencies": {
+    "bunyan": "^1.8.12",
     "eslint": "4.13.1",
     "eslint-config-prettier": "^2.9.0",
     "eslint-plugin-joyent": "~2.0.0",
     "eslint-plugin-prettier": "^2.6.0",
-    "prettier": "^1.11.1"
+    "prettier": "^1.11.1",
+    "restify": "7.x",
+    "restify-errors": "^5.0.0"
   }
 }

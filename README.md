@@ -15,14 +15,14 @@ guidelines](https://github.com/joyent/triton/blob/master/CONTRIBUTING.md) --
 
 ## Usage
 
-Reasonably minimal usage (for the defaults):
+Reasonably minimal usage (see [examples/hello-world.js](./examples/hello-world.js)):
 
 ```javascript
 var auditLogger = require('audit-logger');
 var bunyan = require('bunyan');
-var restify = require('restify);
+var restify = require('restify');
 
-var NAME = 'myservice';
+var NAME = 'hello-world';
 var log = bunyan.createLogger({
     name: NAME,
     serializers: restify.bunyan.serializers
@@ -33,17 +33,17 @@ var server = restify.createServer({
     // ...
 });
 
-server.on('after', audit.createAuditLogHandler({
+server.on('after', auditLogger.createAuditLogHandler({
     log: log,
     // ...
-});
+}));
 ```
 
 An example showing some configuration:
 
 
 ```javascript
-server.on('after', audit.createAuditLogHandler({
+server.on('after', auditLogger.createAuditLogHandler({
     log: log,
     reqBody: {
         include: true,
@@ -57,6 +57,7 @@ server.on('after', audit.createAuditLogHandler({
     routeOverrides: {
         // Never log 'ping' route requests.
         'getping': {include: false},
+
         // Reduce logging for a possibly frequent restify route at a
         // different level that isn't typically enabled.
         'getconfigs': {
@@ -70,6 +71,7 @@ server.on('after', audit.createAuditLogHandler({
         }
     }
 }));
+```
 
 
 ## Development
