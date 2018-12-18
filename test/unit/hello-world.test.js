@@ -8,7 +8,7 @@
  * Copyright (c) 2018, Joyent, Inc.
  */
 
-'use strict'
+'use strict';
 
 const assert = require('assert-plus');
 const bunyan = require('bunyan');
@@ -52,8 +52,9 @@ function createServer(opts) {
     assert.string(opts.name, 'opts.name');
     assert.optionalObject(opts.auditLoggerOpts, 'opts.auditLoggerOpts');
 
-    let auditLoggerOpts = opts.auditLoggerOpts ?
-            deepCopy(opts.auditLoggerOpts) : {};
+    let auditLoggerOpts = opts.auditLoggerOpts
+        ? deepCopy(opts.auditLoggerOpts)
+        : {};
     let log;
     let recs = [];
     let server;
@@ -79,27 +80,31 @@ function createServer(opts) {
         setImmediate(() => {
             cb(recs);
         });
-    }
+    };
     server.clearRecs = function clearRecs() {
         recs.length = 0;
-    }
+    };
 
     auditLoggerOpts.log = log;
     server.on('after', auditLogger.createAuditLogHandler(auditLoggerOpts));
 
     // Endpoints.
     server.get('/hello', function hello(req, res, next) {
-        res.send({'hello': 'world'});
+        res.send({hello: 'world'});
         next();
     });
-    server.put('/join',
+    server.put(
+        '/join',
         restify.plugins.bodyParser({mapParams: false}),
         function join(req, res, next) {
             if (!req.body.login) {
-                next(new restifyErrors.InvalidArgumentError(
-                    'missing login field'));
+                next(
+                    new restifyErrors.InvalidArgumentError(
+                        'missing login field'
+                    )
+                );
             } else {
-                res.send({'success': true, 'login': req.body.login});
+                res.send({success: true, login: req.body.login});
                 next();
             }
         }
@@ -115,13 +120,13 @@ function createServer(opts) {
 function CapturingStream(recs) {
     this.recs = recs;
 }
-CapturingStream.prototype.write = function (rec) {
+CapturingStream.prototype.write = function write(rec) {
     this.recs.push(rec);
-}
+};
 
 // ---- tests
 
-tap.test('empty-opts', (tt) => {
+tap.test('empty-opts', tt => {
     // Default audit logger config will exclude req/res bodies.
     const auditLoggerOpts = null;
 
@@ -131,18 +136,18 @@ tap.test('empty-opts', (tt) => {
         auditLoggerOpts: auditLoggerOpts
     });
 
-    tt.test('server listen', (t) => {
+    tt.test('server listen', t => {
         server.listen(port, addr, function listening() {
             t.end();
         });
     });
 
-    tt.test('GET /hello', (t) => {
+    tt.test('GET /hello', t => {
         server.clearRecs();
-        client.get('/hello', function (err, req, res, body) {
+        client.get('/hello', (err, _req, res, _body) => {
             t.ifErr(err, err);
             t.equal(res.statusCode, 200, '200 status code');
-            server.getRecs((recs) => {
+            server.getRecs(recs => {
                 var rec = recs[0]; // assuming audit rec is the only one
                 t.ok(rec.audit, 'rec.audit');
                 t.equal(rec.res.statusCode, 200, 'rec.res.statusCode');
@@ -152,12 +157,12 @@ tap.test('empty-opts', (tt) => {
         });
     });
 
-    tt.test('PUT /join', (t) => {
+    tt.test('PUT /join', t => {
         server.clearRecs();
-        client.put('/join', {login: 'bob'}, function (err, req, res, body) {
+        client.put('/join', {login: 'bob'}, (err, _req, res, _body) => {
             t.ifErr(err, err);
             t.equal(res.statusCode, 200, '200 status code');
-            server.getRecs((recs) => {
+            server.getRecs(recs => {
                 var rec = recs[0]; // assuming audit rec is the only one
                 t.ok(rec.audit, 'rec.audit');
                 t.notOk(rec.res.body, 'no rec.res.body');
@@ -166,12 +171,12 @@ tap.test('empty-opts', (tt) => {
         });
     });
 
-    tt.test('404', (t) => {
+    tt.test('404', t => {
         server.clearRecs();
-        client.get('/no-such-endpoint', function (err, req, res, body) {
+        client.get('/no-such-endpoint', (err, _req, res, _body) => {
             t.ok(err, 'err: ' + err);
             t.equal(res.statusCode, 404, '404 status code');
-            server.getRecs((recs) => {
+            server.getRecs(recs => {
                 var rec = recs[0]; // assuming audit rec is the only one
                 t.ok(rec.audit, 'rec.audit');
                 t.equal(rec.res.statusCode, 404, 'rec.res.statusCode');
@@ -182,26 +187,28 @@ tap.test('empty-opts', (tt) => {
         });
     });
 
-    tt.test('GET /oops', (t) => {
+    tt.test('GET /oops', t => {
         server.clearRecs();
-        client.get('/oops', function (err, req, res, body) {
+        client.get('/oops', (err, _req, res, _body) => {
             t.ok(err, 'err: ' + err);
             t.equal(res.statusCode, 500, '500 status code');
-            server.getRecs((recs) => {
+            server.getRecs(recs => {
                 var rec = recs[0]; // assuming audit rec is the only one
                 t.ok(rec.audit, 'rec.audit');
                 t.equal(rec.res.statusCode, 500, 'rec.res.statusCode');
                 t.notOk(rec.res.body, 'no rec.res.body');
                 t.equal(rec.err.name, 'InternalError');
                 t.equal(rec.err.message, 'something blew up');
-                t.ok(/root cause/.test(rec.err.stack),
-                    'err stack includes "root cause" error');
+                t.ok(
+                    /root cause/.test(rec.err.stack),
+                    'err stack includes "root cause" error'
+                );
                 t.end();
             });
         });
     });
 
-    tt.test('teardown', (t) => {
+    tt.test('teardown', t => {
         server.close();
         client.close();
         t.end();
@@ -210,8 +217,7 @@ tap.test('empty-opts', (tt) => {
     tt.end();
 });
 
-
-tap.test('default-body-logging', (tt) => {
+tap.test('default-body-logging', tt => {
     // By default resBody/reqBody = {} will: log response bodies, excluding
     // buffers, excluding responses with GET requests with a 2xx status code,
     // and will clip at 10k characters.
@@ -226,16 +232,16 @@ tap.test('default-body-logging', (tt) => {
         auditLoggerOpts: auditLoggerOpts
     });
 
-    tt.test('server listen', (t) => {
+    tt.test('server listen', t => {
         server.listen(port, addr, function listening() {
             t.end();
         });
     });
 
-    tt.test('GET /hello', (t) => {
+    tt.test('GET /hello', t => {
         server.clearRecs();
-        client.get('/hello', function (err, req, res, body) {
-            server.getRecs((recs) => {
+        client.get('/hello', (_err, _req, _res, _body) => {
+            server.getRecs(recs => {
                 var rec = recs[0]; // assuming audit rec is the only one
                 t.ok(rec.audit, 'rec.audit');
                 t.equal(rec.res.statusCode, 200, 'rec.res.statusCode');
@@ -245,10 +251,10 @@ tap.test('default-body-logging', (tt) => {
         });
     });
 
-    tt.test('PUT /join', (t) => {
+    tt.test('PUT /join', t => {
         server.clearRecs();
-        client.put('/join', {login: 'bob'}, function (err, req, res, body) {
-            server.getRecs((recs) => {
+        client.put('/join', {login: 'bob'}, (_err, _req, _res, _body) => {
+            server.getRecs(recs => {
                 var rec = recs[0]; // assuming audit rec is the only one
                 t.ok(rec.audit, 'rec.audit');
                 t.equal(rec.res.statusCode, 200, 'rec.res.statusCode');
@@ -259,11 +265,11 @@ tap.test('default-body-logging', (tt) => {
         });
     });
 
-    tt.test('404', (t) => {
+    tt.test('404', t => {
         server.clearRecs();
-        client.get('/no-such-endpoint', function (err, req, res, body) {
+        client.get('/no-such-endpoint', (_err, _req, res, _body) => {
             t.equal(res.statusCode, 404, '404 status code');
-            server.getRecs((recs) => {
+            server.getRecs(recs => {
                 var rec = recs[0]; // assuming audit rec is the only one
                 t.ok(rec.audit, 'rec.audit');
                 t.equal(rec.res.statusCode, 404, 'rec.res.statusCode');
@@ -273,25 +279,29 @@ tap.test('default-body-logging', (tt) => {
         });
     });
 
-    tt.test('GET /oops', (t) => {
+    tt.test('GET /oops', t => {
         server.clearRecs();
-        client.get('/oops', function (err, req, res, body) {
+        client.get('/oops', (_err, _req, res, _body) => {
             t.equal(res.statusCode, 500, '500 status code');
-            server.getRecs((recs) => {
+            server.getRecs(recs => {
                 var rec = recs[0]; // assuming audit rec is the only one
                 t.ok(rec.audit, 'rec.audit');
                 t.equal(rec.res.statusCode, 500, 'rec.res.statusCode');
                 t.ok(rec.res.body, 'rec.res.body');
-                t.ok(/Internal/.test(rec.res.body),
-                    '"Internal" in rec.res.body');
-                t.ok(/something blew up/.test(rec.res.body),
-                    '"something blew up" in rec.res.body');
+                t.ok(
+                    /Internal/.test(rec.res.body),
+                    '"Internal" in rec.res.body'
+                );
+                t.ok(
+                    /something blew up/.test(rec.res.body),
+                    '"something blew up" in rec.res.body'
+                );
                 t.end();
             });
         });
     });
 
-    tt.test('teardown', (t) => {
+    tt.test('teardown', t => {
         server.close();
         client.close();
         t.end();

@@ -13,7 +13,6 @@ var bunyan = require('bunyan');
 var errors = require('restify-errors');
 var restify = require('restify');
 
-
 var NAME = 'hello-world';
 var log = bunyan.createLogger({
     name: NAME,
@@ -21,25 +20,26 @@ var log = bunyan.createLogger({
 });
 var server = restify.createServer({
     name: NAME,
-    log: log,
+    log: log
     // ...
 });
 
-
-server.on('after', auditLogger.createAuditLogHandler({
-    log: log,
-    resBody: {},
-    routeOverrides: {
-        'oops': {
-            logLevel: 'error'
+server.on(
+    'after',
+    auditLogger.createAuditLogHandler({
+        log: log,
+        resBody: {},
+        routeOverrides: {
+            oops: {
+                logLevel: 'error'
+            }
         }
-    }
-}));
-
+    })
+);
 
 // Add some endpoints for play.
 server.get('/hello', function hi(req, res, next) {
-    res.send({'hello': 'world'});
+    res.send({hello: 'world'});
     next();
 });
 server.get({path: '/oops', name: 'oops'}, function hi(req, res, next) {
