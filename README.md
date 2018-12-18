@@ -18,7 +18,7 @@ guidelines](https://github.com/joyent/triton/blob/master/CONTRIBUTING.md) --
 Reasonably minimal usage (see [examples/hello-world.js](./examples/hello-world.js)):
 
 ```javascript
-var auditLogger = require('audit-logger');
+var tritonAuditLogger = require('triton-audit-logger');
 var bunyan = require('bunyan');
 var restify = require('restify');
 
@@ -33,7 +33,7 @@ var server = restify.createServer({
     // ...
 });
 
-server.on('after', auditLogger.createAuditLogHandler({
+server.on('after', tritonAuditLogger.createAuditLogHandler({
     log: log,
     // ...
 }));
@@ -42,7 +42,7 @@ server.on('after', auditLogger.createAuditLogHandler({
 Suggested starter usage for Triton APIs:
 
 ```javascript
-server.on('after', auditLogger.createAuditLogHandler({
+server.on('after', tritonAuditLogger.createAuditLogHandler({
     log: log,
     // Enable logging of request and response bodies. By default these are
     // clipped at 10k and response bodies for HTTP status 2xx are skipped
@@ -69,7 +69,7 @@ An example showing usage of most of the configuration options
 
 
 ```javascript
-server.on('after', auditLogger.createAuditLogHandler({
+server.on('after', tritonAuditLogger.createAuditLogHandler({
     log: log,
     reqBody: {
         include: true,

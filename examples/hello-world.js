@@ -8,7 +8,7 @@
 //      curl -i http://127.0.0.1:8000/oops     # expect a 500, log at ERROR lvl
 //
 
-var auditLogger = require('../');
+var tritonAuditLogger = require('../');
 var bunyan = require('bunyan');
 var errors = require('restify-errors');
 var restify = require('restify');
@@ -26,7 +26,7 @@ var server = restify.createServer({
 
 server.on(
     'after',
-    auditLogger.createAuditLogHandler({
+    tritonAuditLogger.createAuditLogHandler({
         log: log,
         resBody: {},
         routeOverrides: {
