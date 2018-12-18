@@ -39,7 +39,33 @@ server.on('after', auditLogger.createAuditLogHandler({
 }));
 ```
 
-An example showing some configuration:
+Suggested starter usage for Triton APIs:
+
+```
+server.on('after', auditLogger.createAuditLogHandler({
+    log: log,
+    // Enable logging of request and response bodies. By default these are
+    // clipped at 10k and response bodies for HTTP status 2xx are skipped
+    // (because they are typically large and less interesting).
+    reqBody: {},
+    resBody: {},
+
+    // Possibly include some overrides for particular routes. E.g.:
+    routeOverrides: {
+        // Never log 'ping' route requests.
+        'getping': {include: false},
+
+        // Reduce logging for a possibly frequent restify route at a
+        // different level that isn't typically enabled.
+        'getconfigs': {
+            logLevel: 'debug'
+        }
+    }
+}));
+```
+
+An example showing usage of most of the configuration options
+(see the `createAuditLogHandler` comment for option docs):
 
 
 ```javascript
