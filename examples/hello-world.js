@@ -5,7 +5,7 @@
 // Then in a separate terminal make a few requests against it:
 //      curl -i http://127.0.0.1:8000/bogus    # expect a 404
 //      curl -i http://127.0.0.1:8000/hello    # expect a 200
-//      curl -i http://127.0.0.1:8000/oops     # expect a 500
+//      curl -i http://127.0.0.1:8000/oops     # expect a 500, log at ERROR lvl
 //
 
 var auditLogger = require('../');
@@ -28,7 +28,12 @@ var server = restify.createServer({
 
 server.on('after', auditLogger.createAuditLogHandler({
     log: log,
-    resBody: {}
+    resBody: {},
+    routeOverrides: {
+        'oops': {
+            logLevel: 'error'
+        }
+    }
 }));
 
 
@@ -37,7 +42,7 @@ server.get('/hello', function hi(req, res, next) {
     res.send({'hello': 'world'});
     next();
 });
-server.get('/oops', function hi(req, res, next) {
+server.get({path: '/oops', name: 'oops'}, function hi(req, res, next) {
     var err = new Error('boom');
     next(new errors.InternalError(err, 'something blew up'));
 });
