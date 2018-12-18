@@ -1,0 +1,3 @@
+- see the TODOs in lib/audit-logger.js for dealing with restify versions
+  greater than v4
+- better test coverage
