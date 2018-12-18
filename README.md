@@ -41,7 +41,7 @@ server.on('after', auditLogger.createAuditLogHandler({
 
 Suggested starter usage for Triton APIs:
 
-```
+```javascript
 server.on('after', auditLogger.createAuditLogHandler({
     log: log,
     // Enable logging of request and response bodies. By default these are
