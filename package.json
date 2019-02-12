@@ -36,6 +36,6 @@
     "restify": "^7.0.0",
     "restify-clients": "^2.6.4",
     "restify-errors": "^5.0.0",
-    "tap": "^12.1.1"
+    "tap": "^12.5.2"
   }
 }
