@@ -5,59 +5,44 @@
 #
 
 #
-# Copyright (c) 2018, Joyent, Inc.
+# Copyright 2020 Joyent, Inc.
 #
 
-
-#
-# Tools
-#
-
-TAP_EXEC := ./node_modules/.bin/tap
-
-#
-# Files
-#
-
-JS_FILES := $(shell find examples lib test -name '*.js')
-ESLINT_FILES := $(JS_FILES)
-
-include ./tools/mk/Makefile.defs
-include ./tools/mk/Makefile.node_modules.defs
 
 #
 # Variables
 #
 
-NODE := node
-NPM := npm
+ESLINT := ./node_modules/.bin/eslint
+ESLINT_FILES := $(shell find lib -name '*.js')
+TAP_EXEC := ./node_modules/.bin/tap
 TEST_UNIT_JOBS ?= 4
-BUILD = $(TOP)/build
-CLEAN_FILES += $(BUILD)
+
 
 #
 # Targets
 #
 .PHONY: all
-all: $(STAMP_NODE_MODULES)
+all $(TAP_EXEC) $(ESLINT):
+	npm install
 
-$(TAP): $(STAMP_NODE_MODULES)
+clean:
+	rm -rf node_modules build
 
-$(BUILD):
-	mkdir $@
-
+.PHONY: test
 test: test-unit
 
 .PHONY: test-unit
-test-unit: | $(TAP_EXEC) $(STAMP_NODE_MODULES) $(BUILD)
-	$(TAP_EXEC) --jobs=$(TEST_UNIT_JOBS) --output-file=$(BUILD)/test.unit.tap test/unit/**/*.test.js
+test-unit: | $(TAP_EXEC)
+	$(TAP_EXEC) --jobs=$(TEST_UNIT_JOBS) --output-file=./build/test.unit.tap test/unit/**/*.test.js
 
 .PHONY: test-coverage-unit
-test-coverage-unit: | $(TAP_EXEC) $(STAMP_NODE_MODULES) $(BUILD)
-	$(TAP_EXEC) --jobs=$(TEST_UNIT_JOBS) --output-file=$(BUILD)/test.unit.tap --coverage \
-	test/unit/**/*.test.js
+test-coverage-unit: | $(TAP_EXEC)
+	$(TAP_EXEC) --jobs=$(TEST_UNIT_JOBS) --output-file=./build/test.unit.tap --coverage \
+		test/unit/**/*.test.js
 
-check:: check-version
+
+check:: check-version check-eslint
 
 # Ensure CHANGES.md and package.json have the same version.
 .PHONY: check-version
@@ -65,9 +50,14 @@ check-version:
 	@echo version is: $(shell cat package.json | json version)
 	[[ `cat package.json | json version` == `grep '^## ' CHANGES.md | head -2 | tail -1 | awk '{print $$2}'` ]]
 
+.PHONY: check-eslint
+check-eslint:: | $(ESLINT)
+	$(ESLINT) $(ESLINT_FILES)
+
 .PHONY: fmt
 fmt:: | $(ESLINT)
 	$(ESLINT) --fix $(ESLINT_FILES)
+
 
 .PHONY: cutarelease
 cutarelease: check
@@ -92,7 +82,3 @@ cutarelease: check
 .PHONY: git-hooks
 git-hooks:
 	ln -sf ../../tools/pre-commit.sh .git/hooks/pre-commit
-
-include ./tools/mk/Makefile.deps
-include ./tools/mk/Makefile.targ
-include ./tools/mk/Makefile.node_modules.targ
